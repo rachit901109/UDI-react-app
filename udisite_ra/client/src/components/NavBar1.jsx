@@ -14,7 +14,7 @@ const NavBar1 = () => {
   };
 
   return (
-    <div className='flex justify-between items-center h-24 mx-0 px-6 text-purple-600 absolute inset-0 top-0 left-0 z-50 bg-black'>
+    <div className='flex opacity-90 justify-between items-center h-24 mx-0 px-6 text-purple-600 absolute inset-0 top-0 left-0 z-50 bg-black'>
       <h1>
         <Link to="/" className='text-5xl font-bold Trocchi left-2 m-4 '>
           UDI

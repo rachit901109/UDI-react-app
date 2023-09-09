@@ -12,7 +12,7 @@ function SignIn() {
             {/* Page header */}
             <div className="max-w-3xl mx-auto text-center pb-12 md:pb-20">
               <h1 className="text-5xl text-white font-bold">
-                Welcome back. We exist to make entrepreneurship easier.
+                Welcome back. We exist to make your life easier.
               </h1>
             </div>
 
