@@ -4,8 +4,11 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
 import os
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+
 app.config['SECRET_KEY'] = '1faf3789fcb690642fb45ec5a25f7faf62d2cc7e1612443746d33ccbb6e8642c'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.root_path, 'database.db')
 db = SQLAlchemy(app)
