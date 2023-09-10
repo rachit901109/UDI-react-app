@@ -1,61 +1,74 @@
 import React, { useState } from 'react';
 import NavBar1 from '../components/NavBar1';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 
 function SignUp() {
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    reEnterPassword: '',
-    documents: [], // Store the uploaded documents here as an array
-  });
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [reEnterPassword, setReEnterPassword] = useState('');
+  const [documents, setDocuments] = useState([]);
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
-    
     if (type === 'file') {
-      // Convert FileList to an array of file names
-      const fileNames = Array.from(files).map(file => file.name);
-      setFormData({
-        ...formData,
-        [name]: fileNames,
-      });
+      // Handle file input
+      const selectedFiles = Array.from(files);
+      setDocuments(selectedFiles);
     } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
+      // Handle other input fields
+      if (name === 'username') {
+        setUsername(value);
+      } else if (name === 'email') {
+        setEmail(value);
+      } else if (name === 'password') {
+        setPassword(value);
+      } else if (name === 'reEnterPassword') {
+        setReEnterPassword(value);
+      }
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleRemoveFile = (index) => {
+    const updatedFiles = [...documents];
+    updatedFiles.splice(index, 1);
+    setDocuments(updatedFiles);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
   
-    // Prepare data for submission in JSON format
-    const jsonData = {
-      username: formData.username,
-      email: formData.email,
-      password: formData.password,
-      reEnterPassword: formData.reEnterPassword,
-      documents: formData.documents,
-    };
+    const formData = new FormData(); // Create a FormData object
   
-    // Make a POST request to your Flask backend with JSON data
-    axios.post('/api/signup', jsonData, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => {
-        // Handle successful response (e.g., redirect, show success message)
-        console.log('Response from server:', response.data);
-      })
-      .catch((error) => {
-        // Handle error (e.g., display error message)
-        console.error('Error:', error);
+    // Append form fields and files to the FormData object
+    formData.append('username', username);
+    formData.append('email', email);
+    formData.append('password', password);
+    formData.append('reEnterPassword', reEnterPassword);
+    
+    // Append files
+    for (const file of documents) {
+      formData.append('documents', file);
+    }
+  
+    try {
+      // Make a POST request with FormData using fetch
+      const response = await fetch('/api/signup', {
+        method: 'POST',
+        body: formData, // Send the FormData object
       });
+  
+      if (response.ok) {
+        const data = await response.json();
+        // Handle successful response (e.g., redirect, show success message)
+        console.log('Response from server:', data);
+      } else {
+        // Handle error (e.g., display error message)
+        console.error('Error:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
   
 
@@ -74,7 +87,7 @@ function SignUp() {
             <div className="max-w-sm mx-auto bg-zinc-800/60 p-8 rounded-xl shadow-md">
               <form onSubmit={handleSubmit}>
                 <div className="flex flex-wrap -mx-3 mb-4">
-                  <div className="w-full px-3">
+                  <div className="w-full px-3 mb-4">
                     <label
                       htmlFor="username"
                       className="block text-gray-300 text-sm font-medium mb-1"
@@ -85,16 +98,14 @@ function SignUp() {
                       type="text"
                       id="username"
                       name="username"
-                      value={formData.username}
+                      value={username}
                       onChange={handleChange}
                       className="form-input w-full text-gray h-10 border border-black-300 rounded-lg"
                       placeholder="username"
                       required
                     />
                   </div>
-                </div>
-                <div className="flex flex-wrap -mx-3 mb-4">
-                  <div className="w-full px-3">
+                  <div className="w-full px-3 mb-4">
                     <label
                       htmlFor="email"
                       className="block text-gray-300 text-sm font-medium mb-1"
@@ -105,16 +116,14 @@ function SignUp() {
                       type="email"
                       id="email"
                       name="email"
-                      value={formData.email}
+                      value={email}
                       onChange={handleChange}
                       className="form-input w-full text-gray h-10 border border-black-300 rounded-lg"
                       placeholder="you@yourcompany.com"
                       required
                     />
                   </div>
-                </div>
-                <div className="flex flex-wrap -mx-3 mb-4">
-                  <div className="w-full px-3">
+                  <div className="w-full px-3 mb-4">
                     <label
                       htmlFor="password"
                       className="block text-gray-300 text-sm font-medium mb-1"
@@ -125,16 +134,14 @@ function SignUp() {
                       type="password"
                       id="password"
                       name="password"
-                      value={formData.password}
+                      value={password}
                       onChange={handleChange}
                       className="form-input w-full text-gray h-10 border border-black-300 rounded-lg"
                       placeholder="password"
                       required
                     />
                   </div>
-                </div>
-                <div className="flex flex-wrap -mx-3 mb-4">
-                  <div className="w-full px-3">
+                  <div className="w-full px-3 mb-4">
                     <label
                       htmlFor="reEnterPassword"
                       className="block text-gray-300 text-sm font-medium mb-1"
@@ -145,7 +152,7 @@ function SignUp() {
                       type="password"
                       id="reEnterPassword"
                       name="reEnterPassword"
-                      value={formData.reEnterPassword}
+                      value={reEnterPassword}
                       onChange={handleChange}
                       className="form-input w-full text-gray h-10 border border-black-300 rounded-lg"
                       placeholder="re-enter password"
@@ -153,24 +160,61 @@ function SignUp() {
                     />
                   </div>
                 </div>
-                <div className="flex flex-wrap -mx-3 mb-4">
-                  <div className="w-full px-3">
-                    <label
-                      htmlFor="document"
-                      className="block text-gray-300 text-sm font-medium mb-1"
-                    >
-                      Upload Document(s):
-                    </label>
+                <div className="mt-4">
+                  {documents.map((file, index) => (
+                    <div key={index} className="flex items-center mb-2">
+                      <span className="mr-2 text-white hover:text-grey">
+                        {file.name}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveFile(index)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center justify-center w-full">
+                  <label
+                    htmlFor="dropzone-file"
+                    className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                  >
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <svg
+                        className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 20 16"
+                      > 
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                        />
+                      </svg>
+                      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                        <span className="font-semibold">Click to upload</span> or
+                        drag and drop
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        SVG, PNG, JPG or GIF (MAX. 800x400px)
+                      </p>
+                    </div>
                     <input
+                      id="dropzone-file"
                       type="file"
-                      id="document"
                       name="documents"
-                      accept=".pdf, .doc, .docx, .jpg, .png" // Add acceptable file types
+                      accept=".pdf, .doc, .docx, .jpg, .png"
                       onChange={handleChange}
-                      className="form-input w-full text-gray h-12 border border-black-300 rounded-lg bg-white text-purple-600 focus:ring-purple-400 focus:border-purple-400"
-                      multiple // Allow multiple files to be selected
+                      className="hidden"
+                      multiple
                     />
-                  </div>
+                  </label>
                 </div>
                 <div className="flex flex-wrap -mx-3 mt-6">
                   <div className="w-full px-3 p-3">
