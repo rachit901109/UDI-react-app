@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import NavBar1 from '../components/NavBar1';
 import { Link } from 'react-router-dom';
 
+
 function SignUp() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -45,6 +46,12 @@ function SignUp() {
     formData.append('email', email);
     formData.append('password', password);
     formData.append('reEnterPassword', reEnterPassword);
+
+    if (password !== reEnterPassword) {
+      // Display an error message to the user or prevent form submission
+      alert("Passwords do not match");
+      return;
+    }
     
     // Append files
     for (const file of documents) {

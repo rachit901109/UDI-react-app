@@ -36,3 +36,13 @@
     transform: rotate(360deg);
   }
 }
+
+
+.error {
+  background-color: #ffcccc; /* Red background color for error messages */
+  border: 1px solid #ff0000; /* Red border for error messages */
+  color: #ff0000; /* Red text color for error messages */
+  padding: 10px; /* Add padding to the message box */
+  margin-bottom: 10px; /* Add margin to separate it from other elements */
+}
+
