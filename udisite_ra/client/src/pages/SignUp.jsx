@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import NavBar1 from '../components/NavBar1';
 import { Link } from 'react-router-dom';
 
-
 function SignUp() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -38,9 +37,9 @@ function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const formData = new FormData(); // Create a FormData object
-  
+
     // Append form fields and files to the FormData object
     formData.append('username', username);
     formData.append('email', email);
@@ -49,35 +48,39 @@ function SignUp() {
 
     if (password !== reEnterPassword) {
       // Display an error message to the user or prevent form submission
-      alert("Passwords do not match");
+      alert('Passwords do not match');
       return;
     }
-    
+
     // Append files
     for (const file of documents) {
       formData.append('documents', file);
     }
+
+      try {
+    const response = await fetch('/api/signup', {
+      method: 'POST',
+      body: formData,
+    });
   
-    try {
-      // Make a POST request with FormData using fetch
-      const response = await fetch('/api/signup', {
-        method: 'POST',
-        body: formData, // Send the FormData object
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-        // Handle successful response (e.g., redirect, show success message)
-        console.log('Response from server:', data);
+    if (response.ok) {
+      const data = await response.json();
+      // Handle successful response (e.g., redirect, show success message)
+      console.log('Response from server:', data);
+    } else {
+      const errorData = await response.json(); // Parse the error response
+      if (errorData.error) {
+        // Display the error message to the user
+        alert(errorData.error);
       } else {
-        // Handle error (e.g., display error message)
+        // Handle other error scenarios
         console.error('Error:', response.statusText);
       }
-    } catch (error) {
-      console.error('Error:', error);
     }
+  } catch (error) {
+    console.error('Error:', error);
+  }
   };
-  
 
   return (
     <>

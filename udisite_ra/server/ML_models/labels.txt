@@ -1,0 +1,6 @@
+0 Aadhar Front
+1 Aadhar Back
+2 Pan
+3 Driving License
+4 Other
+5 Passport
